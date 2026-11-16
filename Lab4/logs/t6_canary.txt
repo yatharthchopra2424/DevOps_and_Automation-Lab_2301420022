@@ -1,0 +1,51 @@
+$ docker compose -f canary/docker-compose.yml up -d
+ Network canary_canary-net Creating 
+ Network canary_canary-net Creating 
+ Network canary_canary-net Created 
+ Network canary_canary-net Created 
+ Container lab4-stable Creating 
+ Container lab4-canary Creating 
+ Container lab4-canary Created 
+ Container lab4-stable Created 
+ Container lab4-canary-nginx Creating 
+ Container lab4-canary-nginx Created 
+ Container lab4-stable Starting 
+ Container lab4-canary Starting 
+ Container lab4-stable Started 
+ Container lab4-canary Started 
+ Container lab4-canary-nginx Starting 
+ Container lab4-canary-nginx Started
+
+$ Start-Sleep -Seconds 3; docker compose -f canary/docker-compose.yml ps
+NAME                IMAGE          COMMAND                  SERVICE   CREATED         STATUS         PORTS
+lab4-canary         lab4-app:2.0   "python app.py"          canary    4 seconds ago   Up 3 seconds   5000/tcp
+lab4-canary-nginx   nginx:alpine   "/docker-entrypoint.…"   nginx     4 seconds ago   Up 3 seconds   0.0.0.0:5400->80/tcp, [::]:5400->80/tcp
+lab4-stable         lab4-app:1.0   "python app.py"          stable    4 seconds ago   Up 3 seconds   5000/tcp
+
+$ 1..10 | ForEach-Object { curl.exe -s http://localhost:5400/ }
+{"hostname":"80e22e457777","message":"Hello from Lab4 App!","stateful_counter":1,"version":"1.0-stable"}
+{"hostname":"80e22e457777","message":"Hello from Lab4 App!","stateful_counter":2,"version":"1.0-stable"}
+{"hostname":"80e22e457777","message":"Hello from Lab4 App!","stateful_counter":3,"version":"1.0-stable"}
+{"hostname":"80e22e457777","message":"Hello from Lab4 App!","stateful_counter":4,"version":"1.0-stable"}
+{"hostname":"80e22e457777","message":"Hello from Lab4 App!","stateful_counter":5,"version":"1.0-stable"}
+{"hostname":"80e22e457777","message":"Hello from Lab4 App!","stateful_counter":6,"version":"1.0-stable"}
+{"hostname":"80e22e457777","message":"Hello from Lab4 App!","stateful_counter":7,"version":"1.0-stable"}
+{"hostname":"80e22e457777","message":"Hello from Lab4 App!","stateful_counter":8,"version":"1.0-stable"}
+{"hostname":"e064cb6082a0","message":"Hello from Lab4 App v2 - New Features Deployed!","version":"2.0-canary"}
+{"hostname":"80e22e457777","message":"Hello from Lab4 App!","stateful_counter":9,"version":"1.0-stable"}
+
+$ docker compose -f canary/docker-compose.yml down
+ Container lab4-canary-nginx Stopping 
+ Container lab4-canary-nginx Stopped 
+ Container lab4-canary-nginx Removing 
+ Container lab4-canary-nginx Removed 
+ Container lab4-stable Stopping 
+ Container lab4-canary Stopping 
+ Container lab4-stable Stopped 
+ Container lab4-stable Removing 
+ Container lab4-stable Removed 
+ Container lab4-canary Stopped 
+ Container lab4-canary Removing 
+ Container lab4-canary Removed 
+ Network canary_canary-net Removing 
+ Network canary_canary-net Removed

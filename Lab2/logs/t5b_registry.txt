@@ -1,0 +1,17 @@
+$ docker run -d -p 5050:5000 --name lab2-registry registry:2
+ab4d13052470a4178cbb7fb00d7d6d809b18e428d24d9845bae396d135d89693
+
+$ docker tag lab2-python-app:1.0 localhost:5050/lab2-python-app:1.0
+
+$ docker push localhost:5050/lab2-python-app:1.0 2>&1 | Select-Object -Last 4
+5e62c0470a09: Pushed
+9698e03886d7: Pushed
+6b37362b3da7: Pushed
+1.0: digest: sha256:45a5d051147012c75f21477bd798db113ff6f7f80faeeff4586b3226043780e6 size: 856
+
+$ curl.exe -s localhost:5050/v2/_catalog
+{"repositories":["lab2-python-app"]}
+
+$ docker images --filter reference='*lab2-python-app'
+IMAGE                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+lab2-python-app:1.0   45a5d0511470        209MB         51.2MB

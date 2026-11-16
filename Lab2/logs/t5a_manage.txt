@@ -1,0 +1,28 @@
+$ docker ps --filter name=lab2
+CONTAINER ID   IMAGE                 COMMAND           CREATED         STATUS         PORTS                                         NAMES
+17e52e2680a5   lab2-python-app:1.0   "python app.py"   5 seconds ago   Up 5 seconds   0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp   lab2-app
+
+$ docker stop lab2-app
+lab2-app
+
+$ docker ps -a --filter name=lab2
+CONTAINER ID   IMAGE                 COMMAND           CREATED         STATUS                                PORTS     NAMES
+17e52e2680a5   lab2-python-app:1.0   "python app.py"   9 seconds ago   Exited (137) Less than a second ago             lab2-app
+
+$ docker start lab2-app
+lab2-app
+
+$ docker exec lab2-app ls /app
+app.py
+requirements.txt
+
+$ docker stop lab2-app; docker rm lab2-app
+lab2-app
+lab2-app
+
+$ docker ps -a --filter name=lab2
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+$ docker images lab2-python-app
+IMAGE                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+lab2-python-app:1.0   45a5d0511470        209MB         51.2MB

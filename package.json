@@ -1,0 +1,16 @@
+{
+  "name": "devops-and-automation-lab-2301420022",
+  "version": "1.0.0",
+  "description": "DevOps and Automation Lab Assignment Solutions - Group 5",
+  "scripts": {
+    "build:lab1": "node Lab1/tools/build_docs.js",
+    "build:lab2": "node Lab2/tools/build_docs.js",
+    "build:lab3": "node Lab3/tools/build_docs.js",
+    "build:lab4": "node Lab4/tools/build_docs.js"
+  },
+  "dependencies": {
+    "docx": "^9.7.1"
+  },
+  "author": "Yatharth Chopra (2301420022)",
+  "license": "MIT"
+}

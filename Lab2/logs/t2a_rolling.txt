@@ -1,0 +1,24 @@
+$ kubectl set image deployment/lab2-app web=lab2-python-app:2.0
+deployment.apps/lab2-app image updated
+
+$ kubectl rollout status deployment/lab2-app
+Waiting for deployment "lab2-app" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "lab2-app" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "lab2-app" rollout to finish: 1 old replicas are pending termination...
+deployment "lab2-app" successfully rolled out
+
+$ kubectl get pods
+NAME                        READY   STATUS        RESTARTS   AGE
+lab2-app-5cc84bf66c-7fb9x   1/1     Terminating   0          25s
+lab2-app-5cc84bf66c-7ljlm   1/1     Terminating   0          25s
+lab2-app-7c98554f56-2bqzm   1/1     Running       0          1s
+lab2-app-7c98554f56-shjz7   1/1     Running       0          1s
+
+$ kubectl rollout history deployment/lab2-app
+deployment.apps/lab2-app 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+
+$ kubectl exec deploy/lab2-app -- python -c "import urllib.request,json;print(json.load(urllib.request.urlopen('http://localhost:5000/'))['message'])"
+Hello from Lab 2 app VERSION 2.0!

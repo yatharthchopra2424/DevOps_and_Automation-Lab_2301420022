@@ -1,0 +1,26 @@
+$ kubectl get deployments
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+lab2-app   2/2     2            2           2s
+
+$ kubectl get pods -o wide
+NAME                        READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+lab2-app-5cc84bf66c-7fb9x   1/1     Running   0          2s    10.244.0.4   minikube   <none>           <none>
+lab2-app-5cc84bf66c-7ljlm   1/1     Running   0          2s    10.244.0.3   minikube   <none>           <none>
+
+$ kubectl get svc lab2-service
+NAME           TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+lab2-service   NodePort   10.100.158.153   <none>        80:30080/TCP   3s
+
+$ kubectl exec deploy/lab2-app -- python -c "import urllib.request;print(urllib.request.urlopen('http://localhost:5000/').read().decode())"
+{"data_dir":"/data","hostname":"lab2-app-5cc84bf66c-7fb9x","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:27:52.797942+00:00","visits_recorded_in_this_container":1}
+
+$ kubectl describe deployment lab2-app | Select-String 'Replicas|StrategyType|Image'
+
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+    Image:         lab2-python-app:1.0
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   lab2-app-5cc84bf66c (2/2 replicas created)
+  Normal  ScalingReplicaSet  5s    deployment-controller  Scaled up replica set lab2-app-5cc84bf66c from 0 to 2

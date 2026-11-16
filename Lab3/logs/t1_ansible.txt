@@ -1,0 +1,67 @@
+$ python -c "import ansible; print('ansible-core version:', ansible.__version__)"
+ansible-core version: 2.22.0
+
+$ type ansible\playbook.yml
+---
+# Ansible Playbook: Deploy Flask App with Docker
+# Student ID: 2301420022
+- name: Deploy Lab3 Flask Application
+  hosts: local
+  become: false
+  vars:
+    app_image: lab3-flask-app
+    app_tag: "1.0"
+    app_port: 5000
+    container_name: lab3-app
+
+  tasks:
+    - name: Ensure app source directory exists
+      ansible.builtin.file:
+        path: /tmp/lab3-app
+        state: directory
+        mode: "0755"
+
+    - name: Copy application files
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: /tmp/lab3-app/
+      loop:
+        - ../app/app.py
+        - ../app/requirements.txt
+        - ../app/Dockerfile
+
+    - name: Build Docker image
+      community.docker.docker_image:
+        name: "{{ app_image }}"
+        tag: "{{ app_tag }}"
+        source: build
+        build:
+          path: /tmp/lab3-app
+        force_source: true
+
+    - name: Stop and remove old container if running
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: absent
+        force_kill: true
+
+    - name: Start the Flask container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ app_image }}:{{ app_tag }}"
+        state: started
+        ports:
+          - "{{ app_port }}:5000"
+        restart_policy: unless-stopped
+
+    - name: Wait for app to be ready
+      ansible.builtin.uri:
+        url: "http://localhost:{{ app_port }}/health"
+        status_code: 200
+      retries: 10
+      delay: 3
+      register: health_result
+
+    - name: Show health result
+      ansible.builtin.debug:
+        msg: "App is healthy: {{ health_result.json }}"

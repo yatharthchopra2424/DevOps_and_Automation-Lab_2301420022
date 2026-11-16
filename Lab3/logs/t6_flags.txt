@@ -1,0 +1,23 @@
+$ python feature-flags/test_flags.py
+test_empty_init (__main__.TestFeatureFlagsInit.test_empty_init) ... ok
+test_initial_flags (__main__.TestFeatureFlagsInit.test_initial_flags) ... ok
+test_nonexistent_flag_returns_false (__main__.TestFeatureFlagsInit.test_nonexistent_flag_returns_false) ... ok
+test_full_lifecycle (__main__.TestFeatureFlagsIntegration.test_full_lifecycle) ... ok
+test_multiple_toggles (__main__.TestFeatureFlagsIntegration.test_multiple_toggles) ... ok
+test_disable (__main__.TestFeatureFlagsMutation.test_disable) ... ok
+test_disable_new_flag (__main__.TestFeatureFlagsMutation.test_disable_new_flag) ... ok
+test_enable (__main__.TestFeatureFlagsMutation.test_enable) ... ok
+test_enable_new_flag (__main__.TestFeatureFlagsMutation.test_enable_new_flag) ... ok
+test_remove (__main__.TestFeatureFlagsMutation.test_remove) ... ok
+test_remove_nonexistent_no_error (__main__.TestFeatureFlagsMutation.test_remove_nonexistent_no_error) ... ok
+test_set_false (__main__.TestFeatureFlagsMutation.test_set_false) ... ok
+test_set_true (__main__.TestFeatureFlagsMutation.test_set_true) ... ok
+test_toggle_off_to_on (__main__.TestFeatureFlagsMutation.test_toggle_off_to_on) ... ok
+test_toggle_on_to_off (__main__.TestFeatureFlagsMutation.test_toggle_on_to_off) ... ok
+test_all_flags_count (__main__.TestFeatureFlagsQuery.test_all_flags_count) ... ok
+test_all_flags_returns_copy (__main__.TestFeatureFlagsQuery.test_all_flags_returns_copy) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.001s
+
+OK

@@ -1,0 +1,15 @@
+# desired-state.yml — GitOps desired state manifest
+# The reconciler reads this file and ensures Docker containers match.
+
+services:
+  - name: lab4-gitops-app
+    image: lab4-app:1.0
+    port: 5500
+    replicas: 1
+    env:
+      APP_VERSION: "1.0-gitops"
+
+  - name: lab4-gitops-sidecar
+    image: nginx:alpine
+    port: 5501
+    replicas: 1

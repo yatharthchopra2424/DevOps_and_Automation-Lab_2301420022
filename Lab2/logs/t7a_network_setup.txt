@@ -1,0 +1,13 @@
+$ docker network create lab2-net
+19086a9ef47086cc29b6b46bd035aca09ee046e2a01e8d995d37c604540e9398
+
+$ docker run -d --name lab2-net-app --network lab2-net lab2-python-app:1.0
+99685b0a01f90b1c0e3eb66e39fc0587a82abd0b064b74635037a0b6b95d59c9
+
+$ docker run -d --name lab2-net-client --network lab2-net curlimages/curl:latest sleep 3600
+ff3722daa5f3d676966263ea1bf1b3162bba3f9739aae0221973de6166b3ecdf
+
+$ Start-Sleep 3; docker ps --filter name=lab2-net --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
+NAMES             IMAGE                    STATUS
+lab2-net-client   curlimages/curl:latest   Up 3 seconds
+lab2-net-app      lab2-python-app:1.0      Up 4 seconds

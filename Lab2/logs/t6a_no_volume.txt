@@ -1,0 +1,22 @@
+$ docker run -d --name lab2-novol -p 5101:5000 lab2-python-app:1.0
+1157ef2b5a0462f6f29a42cd5ff6567677aaabd2534bb686c1064836730c2251
+
+$ Start-Sleep 3; curl.exe -s localhost:5101/; curl.exe -s localhost:5101/; curl.exe -s localhost:5101/
+{"data_dir":"/data","hostname":"1157ef2b5a04","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:23:05.212659+00:00","visits_recorded_in_this_container":1}
+{"data_dir":"/data","hostname":"1157ef2b5a04","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:23:05.234381+00:00","visits_recorded_in_this_container":2}
+{"data_dir":"/data","hostname":"1157ef2b5a04","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:23:05.254979+00:00","visits_recorded_in_this_container":3}
+
+$ docker exec lab2-novol cat /data/counter.txt
+3
+
+$ docker rm -f lab2-novol
+lab2-novol
+
+$ docker run -d --name lab2-novol -p 5101:5000 lab2-python-app:1.0
+84a3c7e5f0157dcc5cf2a35fd1c59be0f6e1afff5cbf054896fc12c53d34ba35
+
+$ Start-Sleep 3; curl.exe -s localhost:5101/
+{"data_dir":"/data","hostname":"84a3c7e5f015","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:23:10.260110+00:00","visits_recorded_in_this_container":1}
+
+$ docker rm -f lab2-novol
+lab2-novol

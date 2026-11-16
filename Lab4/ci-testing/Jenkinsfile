@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'lab4-app'
+        APP_VERSION = '1.0'
+        REGISTRY = 'localhost:5050'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                echo "Building Docker image ${IMAGE_NAME}:${APP_VERSION}"
+                sh "docker build -t ${IMAGE_NAME}:${APP_VERSION} app/"
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo 'Running pytest automated tests...'
+                sh '''
+                    pip install flask pytest --quiet
+                    python -m pytest ci-testing/test_app.py -v --tb=short
+                '''
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo 'Scanning image with Trivy...'
+                sh "docker run --rm aquasec/trivy image --no-progress --severity HIGH,CRITICAL ${IMAGE_NAME}:${APP_VERSION} || true"
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                echo 'Pushing image to registry...'
+                sh """
+                    docker tag ${IMAGE_NAME}:${APP_VERSION} ${REGISTRY}/${IMAGE_NAME}:${APP_VERSION}
+                    docker push ${REGISTRY}/${IMAGE_NAME}:${APP_VERSION}
+                """
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application...'
+                sh 'docker compose -f blue-green/docker-compose.yml up -d'
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                echo 'Verifying deployment...'
+                sh '''
+                    sleep 5
+                    curl -sf http://localhost:5300/health || exit 1
+                    echo "Deployment verified successfully!"
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs above.'
+        }
+        always {
+            sh 'docker system prune -f || true'
+        }
+    }
+}

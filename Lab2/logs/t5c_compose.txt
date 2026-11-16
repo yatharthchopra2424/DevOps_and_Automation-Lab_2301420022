@@ -1,0 +1,49 @@
+$ Get-Content compose-app/docker-compose.yml
+services:
+  web:
+    build: ./web
+    image: lab2-compose-web:1.0
+    container_name: lab2-compose-web
+    ports:
+      - "5001:5000"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: lab2-compose-redis
+    expose:
+      - "6379"
+
+$ docker compose -f compose-app/docker-compose.yml up -d --build 2>&1 | Select-Object -Last 6
+ Container lab2-compose-web Creating 
+ Container lab2-compose-web Created 
+ Container lab2-compose-redis Starting 
+ Container lab2-compose-redis Started 
+ Container lab2-compose-web Starting 
+ Container lab2-compose-web Started
+
+$ Start-Sleep 4; curl.exe -s localhost:5001/
+{"message":"Hello from the Compose multi-container app!","redis_host":"redis","time_utc":"2026-10-02T16:22:55.486729+00:00","visits_recorded_in_redis":1,"web_hostname":"64b3c7c596a7"}
+
+$ curl.exe -s localhost:5001/
+{"message":"Hello from the Compose multi-container app!","redis_host":"redis","time_utc":"2026-10-02T16:22:55.770690+00:00","visits_recorded_in_redis":2,"web_hostname":"64b3c7c596a7"}
+
+$ docker compose -f compose-app/docker-compose.yml ps
+NAME                 IMAGE                  COMMAND                  SERVICE   CREATED         STATUS         PORTS
+lab2-compose-redis   redis:7-alpine         "docker-entrypoint.s…"   redis     6 seconds ago   Up 5 seconds   6379/tcp
+lab2-compose-web     lab2-compose-web:1.0   "python app.py"          web       6 seconds ago   Up 5 seconds   0.0.0.0:5001->5000/tcp, [::]:5001->5000/tcp
+
+$ docker compose -f compose-app/docker-compose.yml down
+ Container lab2-compose-web Stopping 
+ Container lab2-compose-web Stopped 
+ Container lab2-compose-web Removing 
+ Container lab2-compose-web Removed 
+ Container lab2-compose-redis Stopping 
+ Container lab2-compose-redis Stopped 
+ Container lab2-compose-redis Removing 
+ Container lab2-compose-redis Removed 
+ Network compose-app_default Removing 
+ Network compose-app_default Removed

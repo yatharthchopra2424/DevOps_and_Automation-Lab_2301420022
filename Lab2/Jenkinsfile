@@ -1,0 +1,10 @@
+pipeline {
+  agent any
+  stages {
+    stage('Build Image')   { steps { bat 'docker build -t lab2-python-app:%BUILD_NUMBER% app' } }
+    stage('Load to Minikube') { steps { bat 'minikube image load lab2-python-app:%BUILD_NUMBER%' } }
+    stage('Apply Manifests')  { steps { bat 'kubectl apply -f k8s/' } }
+    stage('Deploy New Image') { steps { bat 'kubectl set image deployment/lab2-app web=lab2-python-app:%BUILD_NUMBER%' } }
+    stage('Verify')           { steps { bat 'kubectl rollout status deployment/lab2-app' } }
+  }
+}

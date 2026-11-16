@@ -1,0 +1,49 @@
+$ docker compose -f blue-green/docker-compose.yml up -d
+ Network blue-green_bg-net Creating 
+ Network blue-green_bg-net Creating 
+ Network blue-green_bg-net Created 
+ Network blue-green_bg-net Created 
+ Container lab4-blue Creating 
+ Container lab4-green Creating 
+ Container lab4-blue Created 
+ Container lab4-green Created 
+ Container lab4-bg-nginx Creating 
+ Container lab4-bg-nginx Created 
+ Container lab4-green Starting 
+ Container lab4-blue Starting 
+ Container lab4-green Started 
+ Container lab4-blue Started 
+ Container lab4-bg-nginx Starting 
+ Container lab4-bg-nginx Started
+
+$ Start-Sleep -Seconds 3; docker compose -f blue-green/docker-compose.yml ps
+NAME            IMAGE          COMMAND                  SERVICE   CREATED         STATUS         PORTS
+lab4-bg-nginx   nginx:alpine   "/docker-entrypoint.…"   nginx     5 seconds ago   Up 3 seconds   0.0.0.0:5300->80/tcp, [::]:5300->80/tcp
+lab4-blue       lab4-app:1.0   "python app.py"          blue      5 seconds ago   Up 3 seconds   5000/tcp
+lab4-green      lab4-app:2.0   "python app.py"          green     5 seconds ago   Up 4 seconds   5000/tcp
+
+$ curl.exe -s http://localhost:5300/
+{"hostname":"e2e3f1c28d1b","message":"Hello from Lab4 App!","stateful_counter":1,"version":"1.0-blue"}
+
+$ Set-Content -Path blue-green\conf\default.conf -Value (Get-Content blue-green\nginx-green.conf -Raw); docker exec lab4-bg-nginx nginx -s reload; Write-Host '--- ZERO-DOWNTIME CUTOVER APPLIED: Traffic Switched to Green (v2.0) ---'
+--- ZERO-DOWNTIME CUTOVER APPLIED: Traffic Switched to Green (v2.0) ---
+2026/11/16 17:11:13 [notice] 32#32: signal process started
+
+$ curl.exe -s http://localhost:5300/
+{"hostname":"fc6e5698e279","message":"Hello from Lab4 App v2 - New Features Deployed!","version":"2.0-green"}
+
+$ Set-Content -Path blue-green\conf\default.conf -Value (Get-Content blue-green\nginx-blue.conf -Raw); docker compose -f blue-green/docker-compose.yml down
+ Container lab4-bg-nginx Stopping 
+ Container lab4-bg-nginx Stopped 
+ Container lab4-bg-nginx Removing 
+ Container lab4-bg-nginx Removed 
+ Container lab4-blue Stopping 
+ Container lab4-green Stopping 
+ Container lab4-blue Stopped 
+ Container lab4-blue Removing 
+ Container lab4-blue Removed 
+ Container lab4-green Stopped 
+ Container lab4-green Removing 
+ Container lab4-green Removed 
+ Network blue-green_bg-net Removing 
+ Network blue-green_bg-net Removed

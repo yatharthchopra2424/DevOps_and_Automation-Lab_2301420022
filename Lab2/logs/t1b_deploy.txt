@@ -1,0 +1,53 @@
+$ Get-Content k8s/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab2-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lab2-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: lab2-app
+    spec:
+      containers:
+        - name: web
+          image: lab2-python-app:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+
+$ Get-Content k8s/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab2-service
+spec:
+  type: NodePort
+  selector:
+    app: lab2-app
+  ports:
+    - port: 80
+      targetPort: 5000
+      nodePort: 30080
+
+$ kubectl apply -f k8s/
+deployment.apps/lab2-app created
+service/lab2-service created
+
+$ kubectl rollout status deployment/lab2-app
+Waiting for deployment "lab2-app" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "lab2-app" rollout to finish: 1 of 2 updated replicas are available...
+deployment "lab2-app" successfully rolled out

@@ -1,0 +1,25 @@
+$ docker compose -f elk/docker-compose.yml ps
+NAME                 IMAGE                   COMMAND                  SERVICE         CREATED              STATUS                        PORTS
+lab3-elasticsearch   elasticsearch:7.17.15   "/bin/tini -- /usr/l…"   elasticsearch   About a minute ago   Up About a minute (healthy)   0.0.0.0:9200->9200/tcp, [::]:9200->9200/tcp
+lab3-kibana          kibana:7.17.15          "/bin/tini -- /usr/l…"   kibana          About a minute ago   Up 5 seconds                  0.0.0.0:5601->5601/tcp, [::]:5601->5601/tcp
+lab3-logstash        logstash:7.17.15        "/usr/local/bin/dock…"   logstash        About a minute ago   Up 4 seconds                  0.0.0.0:5044->5044/tcp, [::]:5044->5044/tcp, 0.0.0.0:9600->9600/tcp, [::]:9600->9600/tcp, 0.0.0.0:5001->5000/tcp, 0.0.0.0:5001->5000/udp, [::]:5001->5000/tcp, [::]:5001->5000/udp
+time="2026-11-16T22:35:30+05:30" level=warning msg="C:\\Users\\yatha\\OneDrive\\Desktop\\devops_sem_7\\Lab3\\elk\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+
+$ curl.exe -s http://localhost:9200
+{
+  "name" : "fbea0a7cdf12",
+  "cluster_name" : "docker-cluster",
+  "cluster_uuid" : "SFh0kqB6Q4uslIfyUBQbjA",
+  "version" : {
+    "number" : "7.17.15",
+    "build_flavor" : "default",
+    "build_type" : "docker",
+    "build_hash" : "0b8ecfb4378335f4689c4223d1f1115f16bef3ba",
+    "build_date" : "2023-11-10T22:03:46.987399016Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.11.1",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}

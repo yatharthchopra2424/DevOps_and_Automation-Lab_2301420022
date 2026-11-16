@@ -1,0 +1,31 @@
+$ powershell -NoProfile -File cicd.ps1 -Build 3
+[Stage 1] Build Image
+sha256:dd220b287b966bdd495e7a3ccbcc5884a8fcae19e787d6599574886c343b8764
+[Stage 2] Load to Minikube
+[Stage 3] Apply Manifests
+deployment.apps/lab2-app configured
+service/lab2-service unchanged
+[Stage 4] Deploy New Image
+deployment.apps/lab2-app image updated
+[Stage 5] Verify
+Waiting for deployment "lab2-app" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "lab2-app" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "lab2-app" rollout to finish: 1 old replicas are pending termination...
+deployment "lab2-app" successfully rolled out
+
+$ Start-Sleep 35; kubectl get deployment lab2-app
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+lab2-app   2/2     2            2           4m15s
+
+$ kubectl describe deployment lab2-app | Select-String 'Image:'
+
+    Image:         lab2-python-app:3
+
+$ kubectl get pods
+NAME                        READY   STATUS    RESTARTS   AGE
+lab2-app-7d4f6dbd47-fhtzr   1/1     Running   0          37s
+lab2-app-7d4f6dbd47-l9psh   1/1     Running   0          38s
+
+$ kubectl get svc lab2-service
+NAME           TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+lab2-service   NodePort   10.100.158.153   <none>        80:30080/TCP   4m16s

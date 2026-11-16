@@ -1,0 +1,93 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'lab3-flask-app'
+        IMAGE_TAG  = "${BUILD_NUMBER}"
+        TRIVY_VERSION = 'latest'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                echo "Source code checked out for build #${BUILD_NUMBER}"
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} app/"
+                    sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                echo "Running unit tests (feature flags)..."
+                sh "python feature-flags/test_flags.py"
+            }
+        }
+
+        stage('Security Scan — Trivy') {
+            steps {
+                script {
+                    echo "Running Trivy vulnerability scan on ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh """
+                        docker run --rm \\
+                          -v /var/run/docker.sock:/var/run/docker.sock \\
+                          aquasec/trivy:${TRIVY_VERSION} image \\
+                          --exit-code 0 \\
+                          --no-progress \\
+                          --format table \\
+                          ${IMAGE_NAME}:${IMAGE_TAG}
+                    """
+                }
+            }
+            post {
+                always {
+                    echo "Trivy scan complete — review output for vulnerabilities"
+                }
+            }
+        }
+
+        stage('OWASP Dependency Check') {
+            steps {
+                echo "Running OWASP dependency-check..."
+                sh """
+                    docker run --rm \\
+                      -v \$(pwd):/src \\
+                      owasp/dependency-check:latest \\
+                      --scan /src/app \\
+                      --format HTML \\
+                      --out /src/devsecops/dependency-check-report
+                """
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo "Deploying ${IMAGE_NAME}:${IMAGE_TAG} to production..."
+                sh "docker-compose -f prometheus/docker-compose.yml up -d"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline succeeded for build #${BUILD_NUMBER}"
+        }
+        failure {
+            echo "Pipeline FAILED for build #${BUILD_NUMBER} — check logs"
+        }
+        always {
+            sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
+        }
+    }
+}

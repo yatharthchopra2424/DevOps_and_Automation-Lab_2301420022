@@ -1,0 +1,38 @@
+$ docker volume create lab2-vol
+lab2-vol
+
+$ docker run -d --name lab2-vol1 -p 5102:5000 -v lab2-vol:/data lab2-python-app:1.0
+67baedfbd8ba0fe6ed3571a4a991efcfb96749bccbf0b94e58f639b6da70ab94
+
+$ Start-Sleep 3; curl.exe -s localhost:5102/; curl.exe -s localhost:5102/
+{"data_dir":"/data","hostname":"67baedfbd8ba","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:23:20.571224+00:00","visits_recorded_in_this_container":1}
+{"data_dir":"/data","hostname":"67baedfbd8ba","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:23:20.591668+00:00","visits_recorded_in_this_container":2}
+
+$ docker rm -f lab2-vol1
+lab2-vol1
+
+$ docker run -d --name lab2-vol2 -p 5102:5000 -v lab2-vol:/data lab2-python-app:1.0
+a828a3da63f07851e2109508aefa81e5e538bb7ce3bdeac612a501633ee8b1f0
+
+$ Start-Sleep 3; curl.exe -s localhost:5102/
+{"data_dir":"/data","hostname":"a828a3da63f0","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:23:25.326666+00:00","visits_recorded_in_this_container":3}
+
+$ docker rm -f lab2-vol2
+lab2-vol2
+
+$ docker run -d --name lab2-bind -p 5103:5000 -v "$PWD/storage-demo/bind-data:/data" lab2-python-app:1.0
+707368bdba578d61638a016000681dc2288dbe3f2cc2e074aea81b0dede469e2
+
+$ Start-Sleep 3; curl.exe -s localhost:5103/
+{"data_dir":"/data","hostname":"707368bdba57","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:23:30.001861+00:00","visits_recorded_in_this_container":1}
+
+$ Get-Content storage-demo/bind-data/counter.txt
+1
+
+$ docker rm -f lab2-bind
+lab2-bind
+
+$ docker volume ls --filter name=lab2
+DRIVER    VOLUME NAME
+local     lab2-data-volume
+local     lab2-vol

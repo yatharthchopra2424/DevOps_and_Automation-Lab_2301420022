@@ -1,0 +1,32 @@
+$ kubectl describe deployment lab2-app | Select-String 'Image:'
+
+    Image:         lab2-python-app:2.0
+
+$ kubectl rollout undo deployment/lab2-app
+deployment.apps/lab2-app rolled back
+Warning: resource deployments/lab2-app was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+
+$ kubectl rollout status deployment/lab2-app
+Waiting for deployment "lab2-app" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "lab2-app" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "lab2-app" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "lab2-app" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "lab2-app" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "lab2-app" rollout to finish: 2 of 3 updated replicas are available...
+deployment "lab2-app" successfully rolled out
+
+$ Start-Sleep 35; kubectl describe deployment lab2-app | Select-String 'Image:'
+
+    Image:         lab2-python-app:1.0
+
+$ kubectl get pods
+NAME                        READY   STATUS    RESTARTS   AGE
+lab2-app-5cc84bf66c-bc76t   1/1     Running   0          49s
+lab2-app-5cc84bf66c-jqrh2   1/1     Running   0          48s
+lab2-app-5cc84bf66c-kv9jr   1/1     Running   0          38s
+
+$ kubectl rollout history deployment/lab2-app
+deployment.apps/lab2-app 
+REVISION  CHANGE-CAUSE
+4         <none>
+5         <none>

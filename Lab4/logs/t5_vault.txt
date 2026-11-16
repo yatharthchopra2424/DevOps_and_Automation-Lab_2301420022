@@ -1,0 +1,68 @@
+$ docker compose -f vault/docker-compose.yml up -d
+ Network vault_default Creating 
+ Network vault_default Creating 
+ Network vault_default Created 
+ Network vault_default Created 
+ Container lab4-vault Creating 
+ Container lab4-vault Created 
+ Container lab4-vault Starting 
+ Container lab4-vault Started
+
+$ Start-Sleep -Seconds 3; docker compose -f vault/docker-compose.yml ps
+NAME         IMAGE                    COMMAND                  SERVICE   CREATED         STATUS         PORTS
+lab4-vault   hashicorp/vault:latest   "docker-entrypoint.s…"   vault     4 seconds ago   Up 3 seconds   0.0.0.0:8200->8200/tcp, [::]:8200->8200/tcp
+
+$ docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=root-token lab4-vault vault status
+Key             Value
+---             -----
+Seal Type       shamir
+Initialized     true
+Sealed          false
+Total Shares    1
+Threshold       1
+Version         2.2.2
+Build Date      2026-11-11T13:53:02Z
+Storage Type    inmem
+Cluster Name    vault-cluster-3a6124fc
+Cluster ID      b8713581-7041-462c-7e55-87b2689a094c
+HA Enabled      false
+
+$ docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=root-token lab4-vault vault kv put secret/lab4/app db_password=SuperSecretPassword123 api_key=devops-vault-key-777
+==== Secret Path ====
+secret/data/lab4/app
+
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2026-11-16T17:11:52.161722389Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            1
+
+$ docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=root-token lab4-vault vault kv get secret/lab4/app
+==== Secret Path ====
+secret/data/lab4/app
+
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2026-11-16T17:11:52.161722389Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            1
+
+======= Data =======
+Key            Value
+---            -----
+api_key        devops-vault-key-777
+db_password    SuperSecretPassword123
+
+$ docker compose -f vault/docker-compose.yml down
+ Container lab4-vault Stopping 
+ Container lab4-vault Stopped 
+ Container lab4-vault Removing 
+ Container lab4-vault Removed 
+ Network vault_default Removing 
+ Network vault_default Removed

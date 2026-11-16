@@ -1,0 +1,38 @@
+$ docker run -d --name lab2-app -p 5000:5000 lab2-python-app:1.0
+17e52e2680a5fa929ca5114d9c7f4be9a70d3442d2923e83f32244e1b822ef63
+
+$ Start-Sleep 3; curl.exe -s localhost:5000/
+{"data_dir":"/data","hostname":"17e52e2680a5","message":"Hello from the Lab 2 containerized Python app!","time_utc":"2026-10-02T16:22:20.981754+00:00","visits_recorded_in_this_container":1}
+
+$ curl.exe -s localhost:5000/health
+{"status":"ok"}
+
+$ docker ps --filter name=lab2-app
+CONTAINER ID   IMAGE                 COMMAND           CREATED         STATUS         PORTS                                         NAMES
+17e52e2680a5   lab2-python-app:1.0   "python app.py"   4 seconds ago   Up 4 seconds   0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp   lab2-app
+
+$ docker history lab2-python-app:1.0 --format 'table {{.CreatedBy}}\t{{.Size}}'
+CREATED BY                                      SIZE
+CMD ["python" "app.py"]                         0B
+EXPOSE [5000/tcp]                               0B
+RUN /bin/sh -c mkdir -p /data # buildkit        8.19kB
+COPY app.py . # buildkit                        12.3kB
+RUN /bin/sh -c pip install --no-cache-dir -r…   15.3MB
+COPY requirements.txt . # buildkit              12.3kB
+WORKDIR /app                                    8.19kB
+CMD ["python3"]                                 0B
+RUN /bin/sh -c set -eux;  for src in idle3 p…   16.4kB
+RUN /bin/sh -c set -eux;   savedAptMark="$(a…   41.4MB
+ENV PYTHON_SHA256=c2c4321961fab0fb999d66e0ce…   0B
+ENV PYTHON_VERSION=3.12.15                      0B
+ENV GPG_KEY=7169605F62C751356D054A26A821E680…   0B
+RUN /bin/sh -c set -eux;  apt-get update;  a…   13.2MB
+ENV LANG=C.UTF-8                                0B
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr…   0B
+# debian.sh --arch 'amd64' out/ 'trixie' '@1…   87.6MB
+
+$ docker logs lab2-app 2>&1 | Select-Object -Last 4
+ * Running on http://172.17.0.2:5000
+Press CTRL+C to quit
+172.17.0.1 - - [02/Oct/2026 16:22:20] "GET / HTTP/1.1" 200 -
+172.17.0.1 - - [02/Oct/2026 16:22:21] "GET /health HTTP/1.1" 200 -

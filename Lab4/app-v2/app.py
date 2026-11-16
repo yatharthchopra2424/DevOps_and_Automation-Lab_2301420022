@@ -1,0 +1,20 @@
+from flask import Flask, jsonify
+import os, socket
+
+app = Flask(__name__)
+VERSION = os.environ.get("APP_VERSION", "2.0")
+
+@app.route("/")
+def index():
+    return jsonify({
+        "message": "Hello from Lab4 App v2 - New Features Deployed!",
+        "version": VERSION,
+        "hostname": socket.gethostname()
+    })
+
+@app.route("/health")
+def health():
+    return jsonify({"status": "healthy", "version": VERSION})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

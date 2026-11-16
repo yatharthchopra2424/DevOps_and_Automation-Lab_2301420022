@@ -1,0 +1,39 @@
+$ docker volume create lab4-dr-vol
+lab4-dr-vol
+
+$ docker run -d --name lab4-dr-app -v lab4-dr-vol:/data -p 5200:5000 lab4-app:1.0
+81e6feba5bbab16f7ec7f4b0965d108d61991453c7965cf060dd7511e3e217a3
+
+$ Start-Sleep -Seconds 2; curl.exe -s http://localhost:5200/
+{"hostname":"81e6feba5bba","message":"Hello from Lab4 App!","stateful_counter":1,"version":"1.0"}
+
+$ curl.exe -s http://localhost:5200/
+{"hostname":"81e6feba5bba","message":"Hello from Lab4 App!","stateful_counter":2,"version":"1.0"}
+
+$ docker run --rm -v lab4-dr-vol:/data -v C:\Users\yatha\OneDrive\Desktop\devops_sem_7\Lab4\disaster-recovery:/backup alpine tar czf /backup/backup_snapshot.tar.gz -C /data .
+
+$ Get-Item disaster-recovery\backup_snapshot.tar.gz | Select-Object Name, Length
+
+Name                   Length
+----                   ------
+backup_snapshot.tar.gz    131
+
+$ docker rm -f lab4-dr-app; docker volume rm lab4-dr-vol; Write-Host '--- DISASTER SIMULATED: Primary container and volume destroyed ---'
+lab4-dr-app
+lab4-dr-vol
+--- DISASTER SIMULATED: Primary container and volume destroyed ---
+
+$ docker volume create lab4-dr-vol-restored
+lab4-dr-vol-restored
+
+$ docker run --rm -v lab4-dr-vol-restored:/data -v C:\Users\yatha\OneDrive\Desktop\devops_sem_7\Lab4\disaster-recovery:/backup alpine tar xzf /backup/backup_snapshot.tar.gz -C /data
+
+$ docker run -d --name lab4-dr-failover -v lab4-dr-vol-restored:/data -p 5201:5000 lab4-app:1.0
+15eafa48fdffcb836aa491198b8479203fbb88342e4b1390d44794b3d24b657b
+
+$ Start-Sleep -Seconds 2; curl.exe -s http://localhost:5201/
+{"hostname":"15eafa48fdff","message":"Hello from Lab4 App!","stateful_counter":3,"version":"1.0"}
+
+$ docker rm -f lab4-dr-failover; docker volume rm lab4-dr-vol-restored
+lab4-dr-failover
+lab4-dr-vol-restored

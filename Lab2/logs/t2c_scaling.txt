@@ -1,0 +1,32 @@
+$ kubectl get deployment lab2-app
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+lab2-app   3/3     3            3           100s
+
+$ kubectl scale deployment/lab2-app --replicas=5
+deployment.apps/lab2-app scaled
+
+$ kubectl rollout status deployment/lab2-app
+Waiting for deployment "lab2-app" rollout to finish: 3 of 5 updated replicas are available...
+Waiting for deployment "lab2-app" rollout to finish: 4 of 5 updated replicas are available...
+deployment "lab2-app" successfully rolled out
+
+$ kubectl get pods
+NAME                        READY   STATUS    RESTARTS   AGE
+lab2-app-5cc84bf66c-2h96s   1/1     Running   0          75s
+lab2-app-5cc84bf66c-4987d   1/1     Running   0          75s
+lab2-app-5cc84bf66c-7kjff   1/1     Running   0          62s
+lab2-app-5cc84bf66c-vjjlc   1/1     Running   0          2s
+lab2-app-5cc84bf66c-xgsc9   1/1     Running   0          2s
+
+$ kubectl scale deployment/lab2-app --replicas=3
+deployment.apps/lab2-app scaled
+
+$ Start-Sleep 35; kubectl get deployment lab2-app
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+lab2-app   3/3     3            3           2m18s
+
+$ kubectl get pods
+NAME                        READY   STATUS    RESTARTS   AGE
+lab2-app-5cc84bf66c-2h96s   1/1     Running   0          111s
+lab2-app-5cc84bf66c-4987d   1/1     Running   0          111s
+lab2-app-5cc84bf66c-7kjff   1/1     Running   0          98s

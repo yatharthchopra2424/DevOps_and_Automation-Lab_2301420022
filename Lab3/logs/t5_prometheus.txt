@@ -1,0 +1,38 @@
+$ docker compose -f prometheus/docker-compose.yml up -d
+time="2026-11-16T22:38:41+05:30" level=warning msg="C:\\Users\\yatha\\OneDrive\\Desktop\\devops_sem_7\\Lab3\\prometheus\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Network prometheus_monitoring Creating 
+ Network prometheus_monitoring Creating 
+ Network prometheus_monitoring Created 
+ Network prometheus_monitoring Created 
+ Container lab3-prometheus Creating 
+ Container lab3-prometheus Created 
+ Container lab3-grafana Creating 
+ Container lab3-grafana Created 
+ Container lab3-prometheus Starting 
+ Container lab3-prometheus Started 
+ Container lab3-grafana Starting 
+ Container lab3-grafana Started
+
+$ Start-Sleep -Seconds 3; docker compose -f prometheus/docker-compose.yml ps
+NAME              IMAGE                    COMMAND                  SERVICE      CREATED         STATUS         PORTS
+lab3-grafana      grafana/grafana:latest   "/run.sh"                grafana      4 seconds ago   Up 3 seconds   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+lab3-prometheus   prom/prometheus:latest   "/bin/prometheus --c…"   prometheus   4 seconds ago   Up 4 seconds   0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp
+time="2026-11-16T22:38:45+05:30" level=warning msg="C:\\Users\\yatha\\OneDrive\\Desktop\\devops_sem_7\\Lab3\\prometheus\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+
+$ curl.exe -s http://localhost:9090/-/healthy
+Prometheus Server is Healthy.
+
+$ curl.exe -s -I http://localhost:3000/login
+
+$ docker compose -f prometheus/docker-compose.yml down
+time="2026-11-16T22:38:46+05:30" level=warning msg="C:\\Users\\yatha\\OneDrive\\Desktop\\devops_sem_7\\Lab3\\prometheus\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container lab3-grafana Stopping 
+ Container lab3-grafana Stopped 
+ Container lab3-grafana Removing 
+ Container lab3-grafana Removed 
+ Container lab3-prometheus Stopping 
+ Container lab3-prometheus Stopped 
+ Container lab3-prometheus Removing 
+ Container lab3-prometheus Removed 
+ Network prometheus_monitoring Removing 
+ Network prometheus_monitoring Removed
